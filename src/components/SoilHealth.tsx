@@ -10,6 +10,13 @@ interface SoilHealthProps {
   location: { lat: number; lng: number };
 }
 
+interface NutrientData {
+  name: string;
+  value: number;
+  unit: string;
+  optimal: [number, number]; // Fixed: explicitly typed as tuple
+}
+
 const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
   const [soilData, setSoilData] = useState({
     ph: 6.8,
@@ -59,7 +66,7 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
     updateSoilData();
   }, [location]);
 
-  const nutrients = [
+  const nutrients: NutrientData[] = [
     { name: 'pH Level', value: soilData.ph, unit: '', optimal: [6.0, 7.5] },
     { name: 'Organic Carbon', value: soilData.organicCarbon, unit: '%', optimal: [1.0, 2.0] },
     { name: 'Nitrogen', value: soilData.nitrogen, unit: '%', optimal: [0.1, 0.2] },
