@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Cloud, Sun, CloudRain, Wind, Thermometer, Droplets } from 'lucide-react';
+import { fetchWeatherData, WeatherData } from '@/utils/apiService';
 
 interface WeatherWidgetProps {
   location: { lat: number; lng: number };
 }
 
 const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
-  const [weatherData, setWeatherData] = useState({
+  const [weatherData, setWeatherData] = useState<WeatherData>({
     temperature: 24,
     humidity: 68,
     windSpeed: 12,
@@ -23,6 +24,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
       { day: 'Fri', temp: 27, condition: 'sunny', rain: 5 }
     ]
   });
+  const [loading, setLoading] = useState(false);
 
   const getWeatherIcon = (condition: string) => {
     switch (condition) {
@@ -39,19 +41,19 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
     return 'text-green-600 bg-green-50';
   };
 
-  // Simulate weather data updates based on location
+  // Fetch real weather data when location changes
   useEffect(() => {
-    const updateWeatherData = () => {
-      const baseTemp = 20 + Math.sin(location.lat * 0.1) * 10;
-      const tempVariation = (Math.random() - 0.5) * 6;
-      const newTemp = Math.round(baseTemp + tempVariation);
-      
-      setWeatherData(prev => ({
-        ...prev,
-        temperature: newTemp,
-        humidity: Math.round(60 + Math.random() * 30),
-        windSpeed: Math.round(8 + Math.random() * 12)
-      }));
+    const updateWeatherData = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchWeatherData(location.lat, location.lng);
+        setWeatherData(data);
+        console.log('Weather data updated:', data);
+      } catch (error) {
+        console.error('Failed to fetch weather data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     updateWeatherData();
@@ -63,6 +65,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
         <CardTitle className="flex items-center space-x-2">
           <Cloud className="h-5 w-5 text-blue-600" />
           <span>Weather Monitoring</span>
+          {loading && <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />}
         </CardTitle>
         <CardDescription>
           Real-time weather data and 5-day forecast
@@ -130,7 +133,9 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
             <span className="text-sm font-semibold text-amber-800">Weather Advisory</span>
           </div>
           <p className="text-xs text-amber-700">
-            High humidity expected midweek. Monitor for increased pest activity and fungal risks.
+            {weatherData.humidity > 80 ? 'High humidity detected. Monitor for increased pest activity and fungal risks.' :
+             weatherData.temperature > 30 ? 'High temperatures expected. Ensure adequate irrigation.' :
+             'Weather conditions are favorable for farming activities.'}
           </p>
         </div>
       </CardContent>

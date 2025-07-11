@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Layers, TestTube, Thermometer, Droplets } from 'lucide-react';
+import { fetchSoilData, SoilData } from '@/utils/apiService';
 
 interface SoilHealthProps {
   location: { lat: number; lng: number };
@@ -14,11 +15,11 @@ interface NutrientData {
   name: string;
   value: number;
   unit: string;
-  optimal: [number, number]; // Fixed: explicitly typed as tuple
+  optimal: [number, number];
 }
 
 const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
-  const [soilData, setSoilData] = useState({
+  const [soilData, setSoilData] = useState<SoilData>({
     ph: 6.8,
     organicCarbon: 1.2,
     nitrogen: 0.15,
@@ -28,6 +29,7 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
     temperature: 20.7,
     salinity: 0.8
   });
+  const [loading, setLoading] = useState(false);
 
   const getHealthScore = (value: number, optimal: [number, number]) => {
     if (value >= optimal[0] && value <= optimal[1]) return 'Excellent';
@@ -52,15 +54,19 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
     return Math.max(0, Math.min(100, (1 - distance) * 100));
   };
 
-  // Simulate soil data updates based on location
+  // Fetch real soil data when location changes
   useEffect(() => {
-    const updateSoilData = () => {
-      setSoilData(prev => ({
-        ...prev,
-        ph: 6.5 + (Math.sin(location.lat * 0.1) + 1) * 0.5,
-        moisture: 55 + Math.random() * 20,
-        temperature: 18 + Math.sin(location.lng * 0.1) * 5 + Math.random() * 3
-      }));
+    const updateSoilData = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchSoilData(location.lat, location.lng);
+        setSoilData(data);
+        console.log('Soil data updated:', data);
+      } catch (error) {
+        console.error('Failed to fetch soil data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     updateSoilData();
@@ -81,6 +87,7 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
         <CardTitle className="flex items-center space-x-2">
           <Layers className="h-5 w-5 text-brown-600" />
           <span>Soil Health Monitor</span>
+          {loading && <div className="w-4 h-4 border-2 border-brown-600 border-t-transparent rounded-full animate-spin" />}
         </CardTitle>
         <CardDescription>
           Real-time soil analysis via SoilGrids API
@@ -158,8 +165,13 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
                   <span className="text-sm font-semibold text-green-900">Soil Health Summary</span>
                 </div>
                 <p className="text-xs text-green-800">
-                  Overall soil health is good with optimal pH levels and adequate organic matter. 
-                  Consider adding potassium-rich fertilizer to improve nutrient balance.
+                  {soilData.ph >= 6.0 && soilData.ph <= 7.5 ? 
+                    'Soil pH is optimal for most crops. ' : 
+                    soilData.ph < 6.0 ? 'Soil is acidic - consider lime application. ' :
+                    'Soil is alkaline - monitor nutrient availability. '}
+                  {soilData.organicCarbon > 1.0 ? 
+                    'Good organic matter content supports soil health.' :
+                    'Consider adding organic matter to improve soil structure.'}
                 </p>
               </div>
             </div>
