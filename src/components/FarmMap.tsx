@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Layers, Satellite, Map as MapIcon, Crosshair, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { fetchNDVIData, fetchSoilData } from '@/utils/apiService';
+import LocationSearch from './LocationSearch';
 
 interface FarmMapProps {
   location: { lat: number; lng: number };
@@ -22,6 +23,7 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
   });
   const [loading, setLoading] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [selectedLocationName, setSelectedLocationName] = useState('');
   
   // Fetch real NDVI and soil data based on location
   useEffect(() => {
@@ -71,7 +73,6 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
     const x = (event.clientX - rect.left) / rect.width;
     const y = (event.clientY - rect.top) / rect.height;
     
-    // Convert click position to lat/lng offset with zoom consideration
     const sensitivity = 0.02 / zoomLevel;
     const latOffset = (y - 0.5) * sensitivity;
     const lngOffset = (x - 0.5) * sensitivity;
@@ -82,6 +83,7 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
     console.log(`Map clicked: Moving from ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)} to ${newLat.toFixed(4)}, ${newLng.toFixed(4)}`);
     
     onLocationChange({ lat: newLat, lng: newLng });
+    setSelectedLocationName(''); // Clear location name when clicking on map
   };
 
   const handleZoomIn = () => {
@@ -95,10 +97,35 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
   const handleResetView = () => {
     setZoomLevel(1);
     onLocationChange({ lat: 40.7128, lng: -74.0060 });
+    setSelectedLocationName('');
+  };
+
+  const handleLocationSearch = (searchResult: { lat: number; lng: number; name: string }) => {
+    onLocationChange({ lat: searchResult.lat, lng: searchResult.lng });
+    setSelectedLocationName(searchResult.name.split(',')[0]); // Use first part of the name
+    console.log('Location searched and selected:', searchResult);
   };
 
   return (
     <div className="space-y-6">
+      {/* Location Search */}
+      <div className="flex flex-col gap-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900">Location Search</h3>
+            <p className="text-xs text-gray-600">Search for a location or click on the map</p>
+          </div>
+        </div>
+        <LocationSearch onLocationSelect={handleLocationSearch} />
+        {selectedLocationName && (
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-white text-green-700 border-green-200">
+              📍 {selectedLocationName}
+            </Badge>
+          </div>
+        )}
+      </div>
+
       {/* Enhanced Map Controls */}
       <div className="flex flex-wrap gap-3 justify-between items-center p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
         <div className="flex gap-2">
@@ -188,7 +215,6 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
           'bg-gradient-to-br from-gray-200 via-brown-200 to-green-200'
         }`}>
           
-          {/* Enhanced Farm Field Overlays */}
           <div className="absolute top-8 left-8 w-32 h-24 border-3 border-blue-500 bg-green-200/60 rounded-xl hover:bg-green-300/80 transition-all cursor-pointer shadow-lg hover:shadow-xl backdrop-blur-sm">
             <div className="p-3">
               <div className="text-xs font-bold text-blue-900">Field A</div>
@@ -211,7 +237,6 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
             </div>
           </div>
 
-          {/* Enhanced NDVI Layer Overlay */}
           {mapLayer === 'ndvi' && (
             <div className="absolute inset-0 bg-gradient-to-r from-red-300/60 via-yellow-300/60 to-green-300/60 transition-opacity duration-300">
               <div className="absolute top-4 right-4 bg-white/95 p-3 rounded-xl shadow-lg backdrop-blur-sm border border-gray-200">
@@ -228,7 +253,6 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
             </div>
           )}
 
-          {/* Enhanced Location Marker */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <div className="relative">
               <div className="w-5 h-5 bg-red-500 rounded-full border-3 border-white shadow-xl animate-pulse ring-4 ring-red-500/30"></div>
@@ -239,7 +263,6 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
             </div>
           </div>
 
-          {/* Grid Overlay for better visual reference */}
           <div className="absolute inset-0 opacity-20">
             <div className="w-full h-full bg-gradient-to-br from-transparent via-white/10 to-transparent"></div>
             <div className="absolute inset-0" style={{
@@ -249,19 +272,17 @@ const FarmMap: React.FC<FarmMapProps> = ({ location, onLocationChange }) => {
           </div>
         </div>
 
-        {/* Enhanced Interactive Instruction */}
         <div className="absolute bottom-4 left-4 bg-white/95 px-4 py-3 rounded-xl text-xs text-gray-700 shadow-lg backdrop-blur-sm border border-gray-200 max-w-xs">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">🖱️</span>
             <span className="font-semibold">Interactive Farm Map</span>
           </div>
           <div className="text-xs opacity-80">
-            Click anywhere to select location • Use zoom controls • Real-time data updates
+            Search location above or click anywhere to select • Use zoom controls • Real-time data updates
           </div>
         </div>
       </div>
 
-      {/* Enhanced Real-time Field Data Display */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-white/80 to-green-50/80 hover:from-white/90 hover:to-green-50/90 transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-green-100">
           <CardContent className="p-4">
