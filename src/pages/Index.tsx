@@ -10,17 +10,39 @@ import RiskAssessment from '@/components/RiskAssessment';
 import SoilHealth from '@/components/SoilHealth';
 import ChatbotWidget from '@/components/ChatbotWidget';
 import AlertsPanel from '@/components/AlertsPanel';
+import AIRecommendations from '@/components/AIRecommendations';
+import { fetchWeatherData, fetchSoilData } from '@/utils/apiService';
 
 const Index = () => {
   const [selectedLocation, setSelectedLocation] = useState({ lat: 40.7128, lng: -74.0060 });
-  const [farmData, setFarmData] = useState(null);
-
-  const riskLevels = {
+  const [weatherData, setWeatherData] = useState<any>(null);
+  const [soilData, setSoilData] = useState<any>(null);
+  const [riskLevels, setRiskLevels] = useState({
     drought: 35,
     pest: 68,
     disease: 22,
     overall: 42
-  };
+  });
+
+  // Fetch data when location changes
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [weather, soil] = await Promise.all([
+          fetchWeatherData(selectedLocation.lat, selectedLocation.lng),
+          fetchSoilData(selectedLocation.lat, selectedLocation.lng)
+        ]);
+        
+        setWeatherData(weather);
+        setSoilData(soil);
+        console.log('Dashboard data updated:', { weather, soil });
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      }
+    };
+
+    fetchData();
+  }, [selectedLocation]);
 
   const getRiskColor = (level: number) => {
     if (level < 30) return 'text-green-600 bg-green-50';
@@ -150,34 +172,19 @@ const Index = () => {
           {/* Right Column - Alerts and AI */}
           <div className="space-y-6">
             <AlertsPanel />
-            <RiskAssessment riskLevels={riskLevels} />
             
-            <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                  <span>AI Recommendations</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-2">This Week's Advisory</h4>
-                  <p className="text-sm text-blue-800">
-                    Based on current weather patterns and soil conditions, consider applying 
-                    preventive pest control measures. High humidity levels detected.
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-green-900 mb-2">Optimal Actions</h4>
-                  <ul className="text-sm text-green-800 space-y-1">
-                    <li>• Monitor soil moisture levels daily</li>
-                    <li>• Schedule irrigation for early morning</li>
-                    <li>• Apply organic fertilizer next week</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+            <RiskAssessment 
+              location={selectedLocation}
+              weatherData={weatherData}
+              soilData={soilData}
+            />
+            
+            <AIRecommendations 
+              location={selectedLocation}
+              weatherData={weatherData}
+              soilData={soilData}
+              riskLevels={riskLevels}
+            />
           </div>
         </div>
       </div>
