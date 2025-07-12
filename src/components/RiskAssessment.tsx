@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -20,9 +19,20 @@ interface RiskAssessmentProps {
     temperature: number;
     organicCarbon: number;
   };
+  onRiskLevelsUpdate?: (riskLevels: {
+    drought: number;
+    pest: number;
+    disease: number;
+    overall: number;
+  }) => void;
 }
 
-const RiskAssessment: React.FC<RiskAssessmentProps> = ({ location, weatherData, soilData }) => {
+const RiskAssessment: React.FC<RiskAssessmentProps> = ({ 
+  location, 
+  weatherData, 
+  soilData, 
+  onRiskLevelsUpdate 
+}) => {
   const [selectedRisk, setSelectedRisk] = useState('overall');
   const [riskLevels, setRiskLevels] = useState({
     drought: 35,
@@ -78,18 +88,25 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ location, weatherData, 
 
       const overallRisk = Math.round((droughtRisk + pestRisk + diseaseRisk) / 3);
 
-      setRiskLevels({
+      const newRiskLevels = {
         drought: Math.round(droughtRisk),
         pest: Math.round(pestRisk),
         disease: Math.round(diseaseRisk),
         overall: overallRisk
-      });
+      };
+
+      setRiskLevels(newRiskLevels);
+
+      // Call the callback to update parent component
+      if (onRiskLevelsUpdate) {
+        onRiskLevelsUpdate(newRiskLevels);
+      }
 
       console.log('Risk levels calculated:', { droughtRisk, pestRisk, diseaseRisk, overallRisk });
     };
 
     calculateRiskLevels();
-  }, [weatherData, soilData, location]);
+  }, [weatherData, soilData, location, onRiskLevelsUpdate]);
 
   const getRiskIcon = (type: string) => {
     switch (type) {

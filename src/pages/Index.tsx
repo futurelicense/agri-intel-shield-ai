@@ -56,6 +56,12 @@ const Index = () => {
     return 'High';
   };
 
+  // Callback function to receive risk levels from RiskAssessment component
+  const handleRiskLevelsUpdate = (newRiskLevels: typeof riskLevels) => {
+    setRiskLevels(newRiskLevels);
+    console.log('Risk levels updated in dashboard:', newRiskLevels);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-amber-50">
       {/* Header */}
@@ -177,6 +183,7 @@ const Index = () => {
               location={selectedLocation}
               weatherData={weatherData}
               soilData={soilData}
+              onRiskLevelsUpdate={handleRiskLevelsUpdate}
             />
             
             <AIRecommendations 
