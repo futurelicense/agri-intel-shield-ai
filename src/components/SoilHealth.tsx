@@ -4,8 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Layers, TestTube, Thermometer, Droplets } from 'lucide-react';
-import { fetchSoilData, SoilData } from '@/utils/apiService';
+import { Layers, TestTube, Thermometer, Droplets, Satellite, TrendingUp } from 'lucide-react';
+import { fetchSoilData, fetchCropHealthData, SoilData } from '@/utils/apiService';
 
 interface SoilHealthProps {
   location: { lat: number; lng: number };
@@ -30,6 +30,7 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
     salinity: 0.8
   });
   const [loading, setLoading] = useState(false);
+  const [cropHealthData, setCropHealthData] = useState<any>(null);
 
   const getHealthScore = (value: number, optimal: [number, number]) => {
     if (value >= optimal[0] && value <= optimal[1]) return 'Excellent';
@@ -54,22 +55,27 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
     return Math.max(0, Math.min(100, (1 - distance) * 100));
   };
 
-  // Fetch real soil data when location changes
+  // Fetch real soil and crop health data when location changes
   useEffect(() => {
-    const updateSoilData = async () => {
+    const updateData = async () => {
       setLoading(true);
       try {
-        const data = await fetchSoilData(location.lat, location.lng);
-        setSoilData(data);
-        console.log('Soil data updated:', data);
+        const [soilDataResult, cropHealthResult] = await Promise.all([
+          fetchSoilData(location.lat, location.lng),
+          fetchCropHealthData(location.lat, location.lng)
+        ]);
+        setSoilData(soilDataResult);
+        setCropHealthData(cropHealthResult);
+        console.log('Soil data updated:', soilDataResult);
+        console.log('Crop health data updated:', cropHealthResult);
       } catch (error) {
-        console.error('Failed to fetch soil data:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    updateSoilData();
+    updateData();
   }, [location]);
 
   const nutrients: NutrientData[] = [
@@ -95,9 +101,10 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="nutrients" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="nutrients">Nutrients</TabsTrigger>
             <TabsTrigger value="conditions">Conditions</TabsTrigger>
+            <TabsTrigger value="satellite">Satellite</TabsTrigger>
           </TabsList>
           
           <TabsContent value="nutrients" className="space-y-4">
@@ -172,6 +179,58 @@ const SoilHealth: React.FC<SoilHealthProps> = ({ location }) => {
                   {soilData.organicCarbon > 1.0 ? 
                     'Good organic matter content supports soil health.' :
                     'Consider adding organic matter to improve soil structure.'}
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="satellite" className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <Satellite className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-green-900">NDVI Index</span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">
+                    {cropHealthData ? cropHealthData.ndvi.toFixed(3) : '0.000'}
+                  </Badge>
+                </div>
+                <Progress value={cropHealthData ? cropHealthData.ndvi * 100 : 0} className="mb-2" />
+                <p className="text-xs text-green-700">
+                  {cropHealthData && cropHealthData.ndvi > 0.7 ? 'Excellent vegetation health - dense, healthy crops' :
+                   cropHealthData && cropHealthData.ndvi > 0.5 ? 'Good vegetation health - moderate crop density' :
+                   cropHealthData && cropHealthData.ndvi > 0.3 ? 'Fair vegetation health - sparse vegetation' :
+                   'Poor vegetation health - consider intervention'}
+                </p>
+              </div>
+
+              <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
+                    <span className="font-medium text-purple-900">EVI Index</span>
+                  </div>
+                  <Badge className="bg-purple-100 text-purple-800">
+                    {cropHealthData ? cropHealthData.evi.toFixed(3) : '0.000'}
+                  </Badge>
+                </div>
+                <Progress value={cropHealthData ? cropHealthData.evi * 100 : 0} className="mb-2" />
+                <p className="text-xs text-purple-700">
+                  Enhanced Vegetation Index - provides better sensitivity in high biomass regions
+                </p>
+              </div>
+
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Satellite className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-semibold text-blue-900">Satellite Data Quality</span>
+                </div>
+                <p className="text-xs text-blue-800">
+                  Data quality: {cropHealthData ? cropHealthData.quality : 'loading...'}
+                  {cropHealthData && cropHealthData.quality === 'good' ? 
+                    ' - High resolution satellite imagery available' :
+                    ' - Using estimated values based on location and season'}
                 </p>
               </div>
             </div>

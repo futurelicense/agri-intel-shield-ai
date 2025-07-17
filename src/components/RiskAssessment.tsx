@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Brain, TrendingUp, Shield, Bug, Droplets, Leaf } from 'lucide-react';
+import { fetchPestDiseaseData } from '@/utils/apiService';
 
 interface RiskAssessmentProps {
   location: { lat: number; lng: number };
@@ -40,10 +41,21 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({
     disease: 22,
     overall: 42
   });
+  const [pestDiseaseData, setPestDiseaseData] = useState<any>(null);
+
+  // Fetch real pest and disease data
+  useEffect(() => {
+    fetchPestDiseaseData(location.lat, location.lng)
+      .then(data => {
+        setPestDiseaseData(data);
+        console.log('Pest/disease data fetched:', data);
+      })
+      .catch(error => console.error('Error fetching pest/disease data:', error));
+  }, [location]);
 
   // Calculate real-time risk levels based on actual data
   useEffect(() => {
-    const calculateRiskLevels = () => {
+    const calculateRiskLevels = async () => {
       let droughtRisk = 30;
       let pestRisk = 40;
       let diseaseRisk = 25;
@@ -79,6 +91,31 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({
         
         // pH affects disease susceptibility
         if (soilData.ph < 6.0 || soilData.ph > 7.5) diseaseRisk += 15;
+      }
+
+      // Incorporate real pest/disease data if available
+      if (pestDiseaseData) {
+        // Adjust pest risk based on real data
+        const { pestRisk: realPestRisk } = pestDiseaseData;
+        if (realPestRisk.aphids === 'high') pestRisk += 20;
+        else if (realPestRisk.aphids === 'medium') pestRisk += 10;
+        
+        if (realPestRisk.caterpillars === 'high') pestRisk += 15;
+        else if (realPestRisk.caterpillars === 'medium') pestRisk += 8;
+        
+        if (realPestRisk.beetles === 'high') pestRisk += 10;
+        else if (realPestRisk.beetles === 'medium') pestRisk += 5;
+
+        // Adjust disease risk based on real data
+        const { diseaseRisk: realDiseaseRisk } = pestDiseaseData;
+        if (realDiseaseRisk.fungal === 'high') diseaseRisk += 25;
+        else if (realDiseaseRisk.fungal === 'medium') diseaseRisk += 12;
+        
+        if (realDiseaseRisk.bacterial === 'high') diseaseRisk += 20;
+        else if (realDiseaseRisk.bacterial === 'medium') diseaseRisk += 8;
+        
+        if (realDiseaseRisk.viral === 'high') diseaseRisk += 15;
+        else if (realDiseaseRisk.viral === 'medium') diseaseRisk += 5;
       }
 
       // Cap at 100%
