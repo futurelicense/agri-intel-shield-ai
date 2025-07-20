@@ -26,7 +26,11 @@ const ChatbotWidget = () => {
     'Should I irrigate today?',
     'What pest risks are expected?',
     'How is my crop health?',
-    'Weather forecast for this week'
+    'Weather forecast for this week',
+    'Show me crop performance trends',
+    'What irrigation is needed?',
+    'Market prices for my crops?',
+    'Best planting schedule?'
   ];
 
   const simulateAIResponse = (userMessage: string) => {
@@ -45,8 +49,16 @@ const ChatbotWidget = () => {
         aiResponse = 'Your crop health looks good! NDVI index is 0.75, indicating healthy vegetation. Field A shows excellent growth, while Field B could benefit from additional nutrients. Overall crop stress is low.';
       } else if (userMessage.toLowerCase().includes('weather')) {
         aiResponse = 'This week\'s forecast: Today 24°C (partly cloudy), Tomorrow 26°C (sunny), Wednesday 22°C (rain expected). High humidity midweek may increase disease pressure. Monitor crops closely on Wednesday.';
+      } else if (userMessage.toLowerCase().includes('performance') || userMessage.toLowerCase().includes('trend')) {
+        aiResponse = 'Your crop performance shows a 12% improvement over last season. Yield predictions are up 8% based on current growth rates. The eastern field is performing exceptionally well with NDVI values of 0.85.';
+      } else if (userMessage.toLowerCase().includes('irrigation') || userMessage.toLowerCase().includes('water')) {
+        aiResponse = 'Based on soil moisture sensors and weather forecasts, I recommend increasing irrigation by 20% in the next 48 hours. Focus on the southern fields where moisture levels are at 65% of optimal.';
+      } else if (userMessage.toLowerCase().includes('market') || userMessage.toLowerCase().includes('price')) {
+        aiResponse = 'Current market prices for corn are $6.45/bushel, up 3% from last week. Soybean prices at $14.20/bushel show stable demand. Consider timing your harvest for optimal market conditions.';
+      } else if (userMessage.toLowerCase().includes('plant') || userMessage.toLowerCase().includes('schedule')) {
+        aiResponse = 'Optimal planting window for your region opens in 2 weeks. Soil temperature is approaching 55°F threshold. I recommend preparing seed beds now and scheduling planting for maximum yield potential.';
       } else {
-        aiResponse = 'I understand you\'re asking about your farm operations. Based on current data: Overall risk is moderate (42%), with pest activity being the main concern. Weather is favorable for next 2 days. Would you like specific recommendations for any particular area?';
+        aiResponse = 'I understand you\'re asking about your farm operations. Based on current data: Overall risk is moderate (42%), with pest activity being the main concern. Weather is favorable for next 2 days. Feel free to ask me about specific topics like weather, soil health, crop performance, market prices, irrigation, or planting schedules. How can I help you optimize your farming operations?';
       }
       
       setMessages(prev => [...prev, {
