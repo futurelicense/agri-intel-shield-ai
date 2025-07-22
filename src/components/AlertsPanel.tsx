@@ -47,30 +47,30 @@ const AlertsPanel = () => {
   ]);
 
   const getAlertIcon = (type: string, severity: string) => {
-    if (severity === 'critical') return <Zap className="h-4 w-4 text-red-600" />;
+    if (severity === 'critical') return <Zap className="h-5 w-5 text-destructive animate-pulse" />;
     switch (type) {
-      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-      case 'success': return <Check className="h-4 w-4 text-green-600" />;
-      default: return <Bell className="h-4 w-4 text-blue-600" />;
+      case 'warning': return <AlertTriangle className="h-5 w-5 text-orange-500" />;
+      case 'success': return <Check className="h-5 w-5 text-emerald-500" />;
+      default: return <Bell className="h-5 w-5 text-primary" />;
     }
   };
 
   const getAlertColor = (severity: string, acknowledged: boolean) => {
-    if (acknowledged) return 'bg-gray-50 border-gray-200';
+    if (acknowledged) return 'bg-muted/30 border-border shadow-sm';
     switch (severity) {
-      case 'critical': return 'bg-red-50 border-red-200';
-      case 'high': return 'bg-orange-50 border-orange-200';
-      case 'medium': return 'bg-yellow-50 border-yellow-200';
-      default: return 'bg-blue-50 border-blue-200';
+      case 'critical': return 'bg-gradient-to-r from-red-50 to-red-100 border-red-200 shadow-md shadow-red-100/50 animate-pulse';
+      case 'high': return 'bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200 shadow-md shadow-orange-100/50';
+      case 'medium': return 'bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200 shadow-sm shadow-yellow-100/50';
+      default: return 'bg-gradient-to-r from-blue-50 to-blue-100 border-primary/20 shadow-sm shadow-primary/10';
     }
   };
 
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
-      case 'critical': return <Badge className="bg-red-600 text-white">Critical</Badge>;
-      case 'high': return <Badge className="bg-orange-600 text-white">High</Badge>;
-      case 'medium': return <Badge className="bg-yellow-600 text-white">Medium</Badge>;
-      default: return <Badge className="bg-blue-600 text-white">Low</Badge>;
+      case 'critical': return <Badge variant="destructive" className="animate-pulse shadow-sm">Critical</Badge>;
+      case 'high': return <Badge className="bg-orange-500 hover:bg-orange-600 text-white shadow-sm">High</Badge>;
+      case 'medium': return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white shadow-sm">Medium</Badge>;
+      default: return <Badge variant="secondary" className="shadow-sm">Low</Badge>;
     }
   };
 
@@ -88,25 +88,27 @@ const AlertsPanel = () => {
   const criticalCount = alerts.filter(alert => alert.severity === 'critical' && !alert.acknowledged).length;
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Bell className="h-5 w-5 text-orange-600" />
-            <span>Active Alerts</span>
+    <Card className="bg-gradient-to-br from-card to-card/95 backdrop-blur-sm border-border/50 shadow-lg">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center justify-between text-lg">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg shadow-md">
+              <Bell className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-semibold text-foreground">Active Alerts</span>
           </div>
           <div className="flex space-x-2">
             {criticalCount > 0 && (
-              <Badge className="bg-red-600 text-white animate-pulse">
+              <Badge variant="destructive" className="animate-pulse shadow-md px-3 py-1">
                 {criticalCount} Critical
               </Badge>
             )}
-            <Badge variant="outline">
+            <Badge variant="outline" className="px-3 py-1 shadow-sm">
               {unacknowledgedCount} New
             </Badge>
           </div>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-muted-foreground text-sm">
           Real-time farm monitoring alerts and notifications
         </CardDescription>
       </CardHeader>
@@ -122,26 +124,32 @@ const AlertsPanel = () => {
               alerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className={`p-3 rounded-lg border ${getAlertColor(alert.severity, alert.acknowledged)} ${
-                    alert.acknowledged ? 'opacity-70' : ''
+                  className={`p-4 rounded-xl border transition-all duration-300 hover:scale-[1.02] ${getAlertColor(alert.severity, alert.acknowledged)} ${
+                    alert.acknowledged ? 'opacity-60' : 'hover:shadow-lg'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      {getAlertIcon(alert.type, alert.severity)}
-                      <span className="font-medium text-sm text-gray-900">
-                        {alert.title}
-                      </span>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-background/80 rounded-lg shadow-sm">
+                        {getAlertIcon(alert.type, alert.severity)}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-sm text-foreground leading-tight">
+                          {alert.title}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       {getSeverityBadge(alert.severity)}
                     </div>
                   </div>
                   
-                  <p className="text-xs text-gray-700 mb-3">{alert.message}</p>
+                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed pl-12">
+                    {alert.message}
+                  </p>
                   
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-1 text-xs text-gray-500">
+                  <div className="flex items-center justify-between pl-12">
+                    <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       <span>{alert.timestamp}</span>
                     </div>
@@ -152,16 +160,16 @@ const AlertsPanel = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => acknowledgeAlert(alert.id)}
-                          className="h-7 px-2 text-xs"
+                          className="h-8 px-3 text-xs hover:scale-105 transition-transform shadow-sm"
                         >
                           <Check className="h-3 w-3 mr-1" />
-                          Ack
+                          Acknowledge
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => dismissAlert(alert.id)}
-                          className="h-7 px-2 text-xs text-red-600 hover:text-red-700"
+                          className="h-8 px-3 text-xs text-destructive hover:text-destructive hover:scale-105 transition-transform shadow-sm"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -175,10 +183,12 @@ const AlertsPanel = () => {
         </ScrollArea>
         
         {unacknowledgedCount > 0 && (
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <div className="flex items-center space-x-2 text-sm text-amber-800">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="font-medium">
+          <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl shadow-sm">
+            <div className="flex items-center space-x-3 text-sm text-amber-800">
+              <div className="p-1 bg-amber-100 rounded-lg">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+              <span className="font-semibold">
                 {unacknowledgedCount} alert{unacknowledgedCount > 1 ? 's' : ''} require{unacknowledgedCount === 1 ? 's' : ''} attention
               </span>
             </div>
