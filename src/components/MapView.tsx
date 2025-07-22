@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { Loader } from '@googlemaps/js-api-loader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,8 +24,8 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ className }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
+  const map = useRef<google.maps.Map | null>(null);
+  const geocoder = useRef<google.maps.Geocoder | null>(null);
   const [mapInitialized, setMapInitialized] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
@@ -34,8 +33,9 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
     name?: string;
   }>({ lat: 40.7128, lng: -74.0060 });
   const [searchQuery, setSearchQuery] = useState('');
-  const [farmMarkers, setFarmMarkers] = useState<mapboxgl.Marker[]>([]);
+  const [farmMarkers, setFarmMarkers] = useState<google.maps.Marker[]>([]);
   const [loading, setLoading] = useState(false);
+  const selectedMarker = useRef<google.maps.Marker | null>(null);
 
   // Sample farm data
   const farmData = [
@@ -68,42 +68,50 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
     }
   ];
 
-  const initializeMap = (token: string) => {
-    if (!mapContainer.current || mapInitialized) return;
+  const initializeMap = async () => {
+    if (!mapContainer.current) return;
 
     try {
-      mapboxgl.accessToken = token;
+      const loader = new Loader({
+        apiKey: 'AIzaSyDanWieWiB0E9zHWq9AWk03cBLkWgtPq9I',
+        version: 'weekly',
+        libraries: ['places', 'geometry']
+      });
+
+      await loader.load();
       
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [selectedLocation.lng, selectedLocation.lat],
+      map.current = new google.maps.Map(mapContainer.current, {
+        center: { lat: selectedLocation.lat, lng: selectedLocation.lng },
         zoom: 12,
-        pitch: 0,
-        bearing: 0
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+          {
+            featureType: 'poi',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          }
+        ]
       });
 
-      // Add navigation controls
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      geocoder.current = new google.maps.Geocoder();
 
-      // Add scale control
-      map.current.addControl(new mapboxgl.ScaleControl(), 'bottom-left');
-
-      map.current.on('load', () => {
-        addFarmMarkers();
-        setMapInitialized(true);
-        toast.success('Map loaded successfully!');
+      // Add click event listener
+      map.current.addListener('click', (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+          setSelectedLocation({ lat, lng });
+          updateLocationMarker(lat, lng);
+        }
       });
 
-      map.current.on('click', (e) => {
-        const { lng, lat } = e.lngLat;
-        setSelectedLocation({ lat, lng });
-        updateLocationMarker(lat, lng);
-      });
+      addFarmMarkers();
+      setMapInitialized(true);
+      toast.success('Google Maps loaded successfully!');
 
     } catch (error) {
-      console.error('Error initializing map:', error);
-      toast.error('Failed to initialize map. Please check your token.');
+      console.error('Error loading Google Maps:', error);
+      toast.error('Failed to load Google Maps');
     }
   };
 
@@ -111,55 +119,57 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
     if (!map.current) return;
 
     // Clear existing markers
-    farmMarkers.forEach(marker => marker.remove());
+    farmMarkers.forEach(marker => marker.setMap(null));
     setFarmMarkers([]);
 
-    const newMarkers: mapboxgl.Marker[] = [];
+    const newMarkers: google.maps.Marker[] = [];
 
     farmData.forEach((farm) => {
-      const markerElement = document.createElement('div');
-      markerElement.className = 'farm-marker';
-      markerElement.style.cssText = `
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        border: 2px solid white;
-        ${farm.health === 'excellent' ? 'background: linear-gradient(135deg, #10b981, #059669);' :
-          farm.health === 'healthy' ? 'background: linear-gradient(135deg, #84cc16, #65a30d);' :
-          farm.health === 'moderate' ? 'background: linear-gradient(135deg, #f59e0b, #d97706);' :
-          'background: linear-gradient(135deg, #ef4444, #dc2626);'}
-      `;
-      markerElement.innerHTML = '🌱';
+      const healthColors = {
+        excellent: '#10b981',
+        healthy: '#84cc16',
+        moderate: '#f59e0b',
+        poor: '#ef4444'
+      };
 
-      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-        <div class="p-3">
-          <h3 class="font-bold text-sm text-gray-900">${farm.name}</h3>
-          <div class="mt-2 space-y-1">
-            <div class="text-xs text-gray-600">Crop: ${farm.crop}</div>
-            <div class="text-xs text-gray-600">Size: ${farm.size}</div>
-            <div class="text-xs text-gray-600">NDVI: ${farm.ndvi}</div>
-            <div class="inline-block px-2 py-1 rounded-full text-xs font-semibold mt-1 ${
-              farm.health === 'excellent' ? 'bg-green-500 text-white' :
-              farm.health === 'healthy' ? 'bg-green-400 text-white' :
-              farm.health === 'moderate' ? 'bg-yellow-500 text-white' :
-              'bg-red-500 text-white'
-            }">
-              ${farm.health.charAt(0).toUpperCase() + farm.health.slice(1)}
+      const marker = new google.maps.Marker({
+        position: { lat: farm.coordinates[1], lng: farm.coordinates[0] },
+        map: map.current!,
+        title: farm.name,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 15,
+          fillColor: healthColors[farm.health as keyof typeof healthColors],
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2
+        }
+      });
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div class="p-3">
+            <h3 class="font-bold text-sm text-gray-900">${farm.name}</h3>
+            <div class="mt-2 space-y-1">
+              <div class="text-xs text-gray-600">Crop: ${farm.crop}</div>
+              <div class="text-xs text-gray-600">Size: ${farm.size}</div>
+              <div class="text-xs text-gray-600">NDVI: ${farm.ndvi}</div>
+              <div class="inline-block px-2 py-1 rounded-full text-xs font-semibold mt-1 ${
+                farm.health === 'excellent' ? 'bg-green-500 text-white' :
+                farm.health === 'healthy' ? 'bg-green-400 text-white' :
+                farm.health === 'moderate' ? 'bg-yellow-500 text-white' :
+                'bg-red-500 text-white'
+              }">
+                ${farm.health.charAt(0).toUpperCase() + farm.health.slice(1)}
+              </div>
             </div>
           </div>
-        </div>
-      `);
+        `
+      });
 
-      const marker = new mapboxgl.Marker(markerElement)
-        .setLngLat(farm.coordinates as [number, number])
-        .setPopup(popup)
-        .addTo(map.current!);
+      marker.addListener('click', () => {
+        infoWindow.open(map.current!, marker);
+      });
 
       newMarkers.push(marker);
     });
@@ -170,111 +180,111 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
   const updateLocationMarker = (lat: number, lng: number) => {
     if (!map.current) return;
 
-    // Remove existing location marker
-    const existingMarker = document.querySelector('.location-marker');
-    if (existingMarker) {
-      existingMarker.remove();
+    // Remove existing marker
+    if (selectedMarker.current) {
+      selectedMarker.current.setMap(null);
     }
 
-    // Add new location marker
-    const markerElement = document.createElement('div');
-    markerElement.className = 'location-marker';
-    markerElement.style.cssText = `
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #ef4444;
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      animation: pulse 2s infinite;
-    `;
+    // Create new marker
+    selectedMarker.current = new google.maps.Marker({
+      position: { lat, lng },
+      map: map.current,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 12,
+        fillColor: '#ef4444',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 3
+      },
+      animation: google.maps.Animation.BOUNCE
+    });
 
-    new mapboxgl.Marker(markerElement)
-      .setLngLat([lng, lat])
-      .addTo(map.current);
+    // Stop animation after 2 seconds
+    setTimeout(() => {
+      if (selectedMarker.current) {
+        selectedMarker.current.setAnimation(null);
+      }
+    }, 2000);
   };
 
   const searchLocation = async () => {
-    if (!searchQuery.trim() || !mapboxToken) return;
+    if (!searchQuery.trim() || !geocoder.current) return;
 
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${mapboxToken}&limit=1`
-      );
-      const data = await response.json();
-
-      if (data.features && data.features.length > 0) {
-        const [lng, lat] = data.features[0].center;
-        const placeName = data.features[0].place_name;
-        
-        setSelectedLocation({ lat, lng, name: placeName });
-        
-        if (map.current) {
-          map.current.flyTo({
-            center: [lng, lat],
-            zoom: 12,
-            duration: 2000
-          });
-          updateLocationMarker(lat, lng);
+      geocoder.current.geocode({ address: searchQuery }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+          const location = results[0].geometry.location;
+          const lat = location.lat();
+          const lng = location.lng();
+          const placeName = results[0].formatted_address;
+          
+          setSelectedLocation({ lat, lng, name: placeName });
+          
+          if (map.current) {
+            map.current.panTo({ lat, lng });
+            map.current.setZoom(14);
+            updateLocationMarker(lat, lng);
+          }
+          
+          toast.success(`Found: ${placeName}`);
+        } else {
+          toast.error('Location not found');
         }
-        
-        toast.success(`Found: ${placeName}`);
-      } else {
-        toast.error('Location not found');
-      }
+        setLoading(false);
+      });
     } catch (error) {
       console.error('Search error:', error);
       toast.error('Search failed');
-    } finally {
       setLoading(false);
     }
   };
 
   const handleZoomIn = () => {
     if (map.current) {
-      map.current.zoomIn();
+      const currentZoom = map.current.getZoom();
+      map.current.setZoom((currentZoom || 12) + 1);
     }
   };
 
   const handleZoomOut = () => {
     if (map.current) {
-      map.current.zoomOut();
+      const currentZoom = map.current.getZoom();
+      map.current.setZoom((currentZoom || 12) - 1);
     }
   };
 
   const handleResetView = () => {
     if (map.current) {
-      map.current.flyTo({
-        center: [selectedLocation.lng, selectedLocation.lat],
-        zoom: 12,
-        bearing: 0,
-        pitch: 0,
-        duration: 1000
-      });
+      map.current.panTo({ lat: selectedLocation.lat, lng: selectedLocation.lng });
+      map.current.setZoom(12);
     }
   };
 
   const changeMapStyle = (style: string) => {
     if (map.current) {
-      map.current.setStyle(`mapbox://styles/mapbox/${style}`);
-      
-      // Re-add markers after style change
-      map.current.once('styledata', () => {
-        addFarmMarkers();
-      });
+      const mapTypeId = style === 'satellite' ? google.maps.MapTypeId.SATELLITE :
+                       style === 'roadmap' ? google.maps.MapTypeId.ROADMAP :
+                       style === 'terrain' ? google.maps.MapTypeId.TERRAIN :
+                       google.maps.MapTypeId.HYBRID;
+      map.current.setMapTypeId(mapTypeId);
     }
   };
 
   useEffect(() => {
-    if (mapboxToken) {
-      initializeMap(mapboxToken);
-    }
+    initializeMap();
     
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        // Cleanup markers
+        farmMarkers.forEach(marker => marker.setMap(null));
+        if (selectedMarker.current) {
+          selectedMarker.current.setMap(null);
+        }
+      }
     };
-  }, [mapboxToken]);
+  }, []);
 
   return (
     <div className={className}>
@@ -286,33 +296,16 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {!mapboxToken ? (
-            <div className="p-6 space-y-4">
+          {!mapInitialized ? (
+            <div className="flex items-center justify-center h-[600px]">
               <div className="text-center space-y-3">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                  <MapPin className="h-8 w-8 text-primary" />
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-                <h3 className="text-lg font-semibold">Mapbox Token Required</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Enter your Mapbox public token to enable the interactive map. 
-                  Get your token at <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">mapbox.com</a>
+                <h3 className="text-lg font-semibold">Loading Google Maps</h3>
+                <p className="text-sm text-muted-foreground">
+                  Please wait while we initialize the map...
                 </p>
-              </div>
-              <div className="max-w-md mx-auto space-y-3">
-                <Input
-                  type="password"
-                  placeholder="pk.eyJ1IjoieW91ci11c2VybmFtZSIsImEiOiJjbGZqMGVtaDEwMWl1..."
-                  value={mapboxToken}
-                  onChange={(e) => setMapboxToken(e.target.value)}
-                  className="text-xs"
-                />
-                <Button 
-                  onClick={() => initializeMap(mapboxToken)} 
-                  className="w-full"
-                  disabled={!mapboxToken.trim()}
-                >
-                  Initialize Map
-                </Button>
               </div>
             </div>
           ) : (
@@ -345,15 +338,15 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => changeMapStyle('streets-v12')}
+                      onClick={() => changeMapStyle('roadmap')}
                       className="text-xs"
                     >
-                      Streets
+                      Roadmap
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => changeMapStyle('satellite-v9')}
+                      onClick={() => changeMapStyle('satellite')}
                       className="text-xs"
                     >
                       Satellite
@@ -361,10 +354,18 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => changeMapStyle('outdoors-v12')}
+                      onClick={() => changeMapStyle('terrain')}
                       className="text-xs"
                     >
                       Terrain
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => changeMapStyle('hybrid')}
+                      className="text-xs"
+                    >
+                      Hybrid
                     </Button>
                   </div>
                 </Card>
@@ -457,18 +458,6 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
           )}
         </CardContent>
       </Card>
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-          }
-          .location-marker {
-            animation: pulse 2s infinite;
-          }
-        `
-      }} />
     </div>
   );
 };
