@@ -105,6 +105,7 @@ const Index = () => {
                     AgriIntel™
                   </h1>
                   <p className="text-sm text-muted-foreground">Farm Intelligence Platform</p>
+                  <p className="text-xs text-muted-foreground/80">Powered by Shield AI Solutions</p>
                 </div>
               </div>
             </div>
@@ -372,6 +373,61 @@ const Index = () => {
       <div className="tour-chatbot">
         <ChatbotWidget />
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border/40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 mt-12">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                  <Sprout className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm bg-gradient-primary bg-clip-text text-transparent">
+                    Shield AI Solutions
+                  </h3>
+                  <p className="text-xs text-muted-foreground">Agricultural Technology Leader</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-xs text-muted-foreground">
+              <span>© 2024 Shield AI Solutions. All rights reserved.</span>
+              <span>AgriIntel™ v2.1.0</span>
+              <span>Enterprise Licensed</span>
+            </div>
+            
+            <div className="flex items-center space-x-4 text-xs">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                <span className="w-2 h-2 bg-success rounded-full mr-2"></span>
+                System Operational
+              </Badge>
+              <span className="text-muted-foreground">Last Update: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+          
+          <div className="border-t border-border/20 mt-4 pt-4">
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
+              <div className="flex items-center space-x-6 text-xs text-muted-foreground">
+                <span>Terms of Service</span>
+                <span>Privacy Policy</span>
+                <span>Support</span>
+                <span>Documentation</span>
+              </div>
+              <div className="flex items-center space-x-2 text-xs">
+                <span className="text-muted-foreground">Powered by</span>
+                <span className="font-semibold bg-gradient-primary bg-clip-text text-transparent">
+                  Shield AI Solutions
+                </span>
+                <Badge variant="secondary" className="ml-2">
+                  Pro License
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* Onboarding Components */}
       <WelcomeModal 
