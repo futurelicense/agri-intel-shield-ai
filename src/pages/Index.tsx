@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   AlertTriangle, 
@@ -17,7 +18,8 @@ import {
   Bell,
   HelpCircle,
   Wifi,
-  WifiOff
+  WifiOff,
+  Map
 } from 'lucide-react';
 import WeatherWidget from '@/components/WeatherWidget';
 import SoilHealth from '@/components/SoilHealth';
@@ -33,6 +35,7 @@ import { WelcomeModal } from '@/components/WelcomeModal';
 import { HelpTooltip } from '@/components/HelpTooltip';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('executive');
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTour, setShowTour] = useState(false);
@@ -129,6 +132,15 @@ const Index = () => {
               </div>
 
               <AlertsPanel />
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/map')}
+                className="mr-2"
+              >
+                <Map className="h-4 w-4 mr-2" />
+                Map
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"
