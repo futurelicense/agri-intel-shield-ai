@@ -41,10 +41,10 @@ const Index = () => {
   const [showTour, setShowTour] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [selectedLocation] = useState({ lat: 40.7128, lng: -74.0060 });
-  const [weatherData] = useState(null);
-  const [soilData] = useState(null);
-  const [riskLevels] = useState({
+  const [selectedLocation, setSelectedLocation] = useState({ lat: 40.7128, lng: -74.0060 });
+  const [weatherData, setWeatherData] = useState(null);
+  const [soilData, setSoilData] = useState(null);
+  const [riskLevels, setRiskLevels] = useState({
     drought: 35,
     pest: 68,
     disease: 22,
@@ -92,6 +92,22 @@ const Index = () => {
     setActiveTab(value);
   }, []);
 
+  const handleLocationChange = useCallback((location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+  }, []);
+
+  const handleRiskLevelsUpdate = useCallback((newRiskLevels: any) => {
+    setRiskLevels(newRiskLevels);
+  }, []);
+
+  const handleWeatherDataUpdate = useCallback((newWeatherData: any) => {
+    setWeatherData(newWeatherData);
+  }, []);
+
+  const handleSoilDataUpdate = useCallback((newSoilData: any) => {
+    setSoilData(newSoilData);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -131,7 +147,6 @@ const Index = () => {
                 </span>
               </div>
 
-              <AlertsPanel />
               <Button 
                 variant="outline" 
                 size="sm"
@@ -313,7 +328,7 @@ const Index = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
               <div className="lg:col-span-2 space-y-4 lg:space-y-6">
                 <div className="transition-all duration-300">
-                  <FarmMap location={selectedLocation} onLocationChange={() => {}} />
+                  <FarmMap location={selectedLocation} onLocationChange={handleLocationChange} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                   <div className="transition-all duration-300">
@@ -326,7 +341,10 @@ const Index = () => {
               </div>
               <div className="space-y-4 lg:space-y-6">
                 <div className="transition-all duration-300">
-                  <RiskAssessment location={selectedLocation} weatherData={weatherData} soilData={soilData} onRiskLevelsUpdate={() => {}} />
+                  <AlertsPanel />
+                </div>
+                <div className="transition-all duration-300">
+                  <RiskAssessment location={selectedLocation} weatherData={weatherData} soilData={soilData} onRiskLevelsUpdate={handleRiskLevelsUpdate} />
                 </div>
                 <div className="transition-all duration-300">
                   <AIRecommendations location={selectedLocation} weatherData={weatherData} soilData={soilData} riskLevels={riskLevels} />
@@ -348,7 +366,7 @@ const Index = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <FarmMap location={selectedLocation} onLocationChange={() => {}} />
+                    <FarmMap location={selectedLocation} onLocationChange={handleLocationChange} />
                   </CardContent>
                 </Card>
               </div>
@@ -368,8 +386,7 @@ const Index = () => {
           <TabsContent value="management" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-6">
-                <RiskAssessment location={selectedLocation} weatherData={weatherData} soilData={soilData} onRiskLevelsUpdate={() => {}} />
-                <AlertsPanel />
+                <RiskAssessment location={selectedLocation} weatherData={weatherData} soilData={soilData} onRiskLevelsUpdate={handleRiskLevelsUpdate} />
               </div>
               <div className="space-y-6">
                 <AIRecommendations location={selectedLocation} weatherData={weatherData} soilData={soilData} riskLevels={riskLevels} />
