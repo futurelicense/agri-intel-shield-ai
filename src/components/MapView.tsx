@@ -72,18 +72,29 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
     if (!mapContainer.current) return;
 
     try {
+      console.log('Initializing Google Maps...');
+      
       const loader = new Loader({
         apiKey: 'AIzaSyDanWieWiB0E9zHWq9AWk03cBLkWgtPq9I',
         version: 'weekly',
-        libraries: ['places', 'geometry']
+        libraries: ['places', 'geometry'],
+        region: 'US',
+        language: 'en'
       });
 
-      await loader.load();
+      console.log('Loading Google Maps API...');
+      const google = await loader.load();
+      console.log('Google Maps API loaded successfully');
       
+      console.log('Creating map instance...');
       map.current = new google.maps.Map(mapContainer.current, {
         center: { lat: selectedLocation.lat, lng: selectedLocation.lng },
         zoom: 12,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+        zoomControl: true,
         styles: [
           {
             featureType: 'poi',
@@ -93,6 +104,7 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
         ]
       });
 
+      console.log('Map created, initializing geocoder...');
       geocoder.current = new google.maps.Geocoder();
 
       // Add click event listener
@@ -105,13 +117,19 @@ const MapView: React.FC<MapViewProps> = ({ className }) => {
         }
       });
 
+      console.log('Adding farm markers...');
       addFarmMarkers();
+      
+      console.log('Map initialization complete');
       setMapInitialized(true);
       toast.success('Google Maps loaded successfully!');
 
     } catch (error) {
       console.error('Error loading Google Maps:', error);
-      toast.error('Failed to load Google Maps');
+      toast.error(`Failed to load Google Maps: ${error.message || 'Unknown error'}`);
+      
+      // Fallback: Show simple message
+      setMapInitialized(false);
     }
   };
 
