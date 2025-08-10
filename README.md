@@ -17,10 +17,6 @@ Key use cases include tracking a farm’s environmental conditions (like rainfal
 - [🌎 Data Sources](#-data-sources)
 - [⚙️ Installation](#️-installation)
 - [📦 Deployment](#-deployment)
-- [📊 Usage](#-usage)
-- [🏗 Architecture](#-architecture)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
 
 ---
 
@@ -49,7 +45,7 @@ The goal: **Increase yield, reduce waste, and improve decision-making** for farm
 ---
 
 ## 🌐 Live Demo
-🔗 **[View Live on Lovable.dev](https://lovable.dev/projects/93ab4951-0a9f-41f2-b18e-7d3694e56db8)**
+🔗 **[View Live Demo](https://agri-intel-shield-ai.vercel.app )**
 
 ---
 
@@ -59,7 +55,6 @@ The goal: **Increase yield, reduce waste, and improve decision-making** for farm
 **Data APIs:** OpenWeatherMap, Sentinel Hub, NASA MODIS, SoilGrids, Google Maps  
 **Charts:** Recharts  
 **AI/NLP:** Hugging Face (planned), rule-based expert system  
-**Hosting:** Lovable.dev / Vercel / Netlify
 
 ---
 
