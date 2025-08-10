@@ -1,73 +1,98 @@
-# Welcome to your Lovable project
+# 🌾 Agri-Intel Shield AI
 
-## Project info
+![License](https://img.shields.io/badge/license-MIT-green)  
+![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-✔-blue) ![Tailwind](https://img.shields.io/badge/TailwindCSS-3.0-blue) ![API](https://img.shields.io/badge/Data%20Sources-Weather%2C%20Soil%2C%20Satellite-yellow)
 
-**URL**: https://lovable.dev/projects/93ab4951-0a9f-41f2-b18e-7d3694e56db8
+> **AI-powered precision farming dashboard** is an intelligent farm management platform that provides real-time insights and analytics for agricultural operations. It combines data from weather services, satellite imagery, and soil databases with AI-driven analysis to help farmers and stakeholders monitor crop health, optimize resource usage, and mitigate risks. The goal of the project is to enhance decision-making on the farm – from daily irrigation and fertilization to long-term crop planning – through a unified dashboard that presents complex agronomic data in a clear, actionable format.
 
-## How can I edit this code?
+Key use cases include tracking a farm’s environmental conditions (like rainfall, temperature, and soil moisture), assessing vegetation health via satellite indices (NDVI/EVI), predicting yield trends, and receiving proactive recommendations for pest control or soil management. By integrating these features, Agri-Intel Shield AI empowers users to improve yields, reduce waste, and respond quickly to issues such as drought stress or pest outbreaks. The platform is designed for ease of use with interactive maps and charts, making advanced agricultural intelligence accessible even to users without a technical background. 
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 📚 Table of Contents
+- [🚀 Overview](#-overview)
+- [✨ Features](#-features)
+- [🌐 Live Demo](#-live-demo)
+- [🛠 Tech Stack](#-tech-stack)
+- [🌎 Data Sources](#-data-sources)
+- [⚙️ Installation](#️-installation)
+- [📦 Deployment](#-deployment)
+- [📊 Usage](#-usage)
+- [🏗 Architecture](#-architecture)
+- [🤝 Contributing](#-contributing)
+- [📜 License](#-license)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/93ab4951-0a9f-41f2-b18e-7d3694e56db8) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Overview
+Agri-Intel Shield AI is an **intelligent farm management platform** that:
+- Tracks weather, soil health, and vegetation indices in real-time
+- Predicts yield trends and pest/disease risks
+- Provides **AI-driven recommendations** for farming actions
+- Displays insights on an **interactive map and analytics dashboard**
 
-**Use your preferred IDE**
+The goal: **Increase yield, reduce waste, and improve decision-making** for farmers using advanced AI and remote sensing.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## ✨ Features
+- 🌦 **Real-Time Weather Monitoring** (OpenWeather API)
+- 🌱 **Soil Health Analytics** (pH, moisture, organic carbon)
+- 🛰 **Satellite NDVI/EVI Tracking** (Sentinel Hub, NASA MODIS)
+- 🐛 **Pest & Disease Risk Analysis**
+- 🤖 **AI Recommendations** with priority levels
+- 🗺 **Interactive Map View**
+- 📈 **Performance Dashboard** with trend charts
+- 💬 **AI Chatbot Assistant**
+- 🔔 **Alerts & Notifications**
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🌐 Live Demo
+🔗 **[View Live on Lovable.dev](https://lovable.dev/projects/93ab4951-0a9f-41f2-b18e-7d3694e56db8)**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🛠 Tech Stack
+**Frontend:** React + TypeScript + Vite  
+**UI:** Tailwind CSS, shadcn/UI, lucide-react icons  
+**Data APIs:** OpenWeatherMap, Sentinel Hub, NASA MODIS, SoilGrids, Google Maps  
+**Charts:** Recharts  
+**AI/NLP:** Hugging Face (planned), rule-based expert system  
+**Hosting:** Lovable.dev / Vercel / Netlify
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+---
+
+## 🌎 Data Sources
+<details>
+<summary>Click to expand data source details</summary>
+
+- **OpenWeatherMap** → Weather & forecast  
+- **Sentinel Hub** → NDVI from Sentinel-2  
+- **NASA MODIS (MOD13Q1)** → NDVI/EVI time-series  
+- **SoilGrids** → pH, organic carbon, nitrogen, moisture  
+- **OpenStreetMap Nominatim** → Geocoding  
+- **Google Maps API** → Map rendering, reverse geocoding  
+- *(Optional)* Planet Labs, Google Earth Engine for advanced imagery
+
+</details>
+
+---
+
+## ⚙️ Installation
+```bash
+# Clone repository
+git clone https://github.com/drholaoluwa/agri-intel-shield-ai.git
+cd agri-intel-shield-ai
+
+# Install dependencies
+npm install
+
+# Create .env with your API keys
+VITE_OPENWEATHER_KEY=xxxx
+VITE_SENTINELHUB_CLIENT_ID=xxxx
+VITE_SENTINELHUB_CLIENT_SECRET=xxxx
+VITE_GOOGLE_MAPS_API_KEY=xxxx
+
+# Run in development
 npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/93ab4951-0a9f-41f2-b18e-7d3694e56db8) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
