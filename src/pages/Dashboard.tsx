@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -151,12 +152,10 @@ const Dashboard = () => {
                 {/* Environmental Conditions */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <WeatherWidget 
-                    location={selectedLocation} 
-                    onWeatherUpdate={handleWeatherUpdate} 
+                    location={selectedLocation}
                   />
                   <SoilHealth 
-                    location={selectedLocation} 
-                    onSoilUpdate={handleSoilUpdate} 
+                    location={selectedLocation}
                   />
                 </div>
 
@@ -265,3 +264,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
