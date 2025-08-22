@@ -19,9 +19,10 @@ const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
   weatherData, 
   soilData 
 }) => {
-  // Calculate performance scores based on real data
+  // Calculate performance scores based on real data with null checks
   const calculatePerformanceScore = () => {
-    const baseScore = 100 - (riskLevels.overall || 40);
+    const overallRisk = riskLevels?.overall || 40;
+    const baseScore = 100 - overallRisk;
     const weatherBonus = weatherData?.temperature > 20 && weatherData?.temperature < 30 ? 10 : 0;
     const soilBonus = soilData?.ph >= 6.0 && soilData?.ph <= 7.5 ? 10 : 0;
     return Math.min(100, Math.max(0, baseScore + weatherBonus + soilBonus));
@@ -43,7 +44,7 @@ const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
     },
     {
       title: 'Crop Health Index',
-      value: Math.max(0, 100 - (riskLevels.disease || 25)),
+      value: Math.max(0, 100 - (riskLevels?.disease || 25)),
       target: 85,
       change: '+3.1%',
       trend: 'up',
@@ -65,7 +66,7 @@ const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
     },
     {
       title: 'Risk Management',
-      value: Math.max(0, 100 - (riskLevels.overall || 40)),
+      value: Math.max(0, 100 - (riskLevels?.overall || 40)),
       target: 85,
       change: '+8.7%',
       trend: 'up',
