@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import CommentsSection from '@/components/CommentsSection';
 import { 
   Sprout, 
   BarChart3, 
@@ -233,6 +233,9 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Comments Section */}
+      <CommentsSection />
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 border-y border-border/50">
