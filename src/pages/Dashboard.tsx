@@ -25,17 +25,19 @@ import AIRecommendations from '@/components/AIRecommendations';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import AlertsPanel from '@/components/AlertsPanel';
 import ChatbotWidget from '@/components/ChatbotWidget';
-import OnboardingTour from '@/components/OnboardingTour';
-import WelcomeModal from '@/components/WelcomeModal';
+import { OnboardingTour } from '@/components/OnboardingTour';
+import { WelcomeModal } from '@/components/WelcomeModal';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState({ lat: 40.7128, lng: -74.0060 });
   const [weatherData, setWeatherData] = useState(null);
   const [soilData, setSoilData] = useState(null);
   const [riskLevels, setRiskLevels] = useState(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showOnboardingTour, setShowOnboardingTour] = useState(false);
 
-  const handleLocationSelect = useCallback((location: string) => {
+  const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
     setSelectedLocation(location);
   }, []);
 
@@ -50,6 +52,18 @@ const Dashboard = () => {
   const handleRiskUpdate = useCallback((data: any) => {
     setRiskLevels(data);
   }, []);
+
+  const handleStartTour = () => {
+    setShowOnboardingTour(true);
+  };
+
+  const handleCloseTour = () => {
+    setShowOnboardingTour(false);
+  };
+
+  const handleCloseWelcomeModal = () => {
+    setShowWelcomeModal(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
@@ -148,9 +162,10 @@ const Dashboard = () => {
 
                 {/* Risk Assessment */}
                 <RiskAssessment 
+                  location={selectedLocation}
                   weatherData={weatherData} 
                   soilData={soilData} 
-                  onRiskUpdate={handleRiskUpdate} 
+                  onRiskLevelsUpdate={handleRiskUpdate} 
                 />
               </div>
 
@@ -158,6 +173,7 @@ const Dashboard = () => {
               <div className="lg:col-span-1 space-y-6">
                 <AlertsPanel />
                 <AIRecommendations 
+                  location={selectedLocation}
                   weatherData={weatherData} 
                   soilData={soilData} 
                   riskLevels={riskLevels} 
@@ -201,6 +217,7 @@ const Dashboard = () => {
           <TabsContent value="insights">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <AIRecommendations 
+                location={selectedLocation}
                 weatherData={weatherData} 
                 soilData={soilData} 
                 riskLevels={riskLevels} 
@@ -234,8 +251,15 @@ const Dashboard = () => {
 
       {/* Floating Components */}
       <ChatbotWidget />
-      <OnboardingTour />
-      <WelcomeModal />
+      <OnboardingTour 
+        isOpen={showOnboardingTour} 
+        onClose={handleCloseTour} 
+      />
+      <WelcomeModal 
+        isOpen={showWelcomeModal} 
+        onClose={handleCloseWelcomeModal} 
+        onStartTour={handleStartTour} 
+      />
     </div>
   );
 };
