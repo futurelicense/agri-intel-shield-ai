@@ -4,73 +4,59 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarContent, AvatarFallback } from '@/components/ui/avatar';
-import { MessageSquare, Send, Star, ThumbsUp } from 'lucide-react';
+import { MessageCircle, Send, ThumbsUp, Reply } from 'lucide-react';
 
 interface Comment {
-  id: string;
-  name: string;
-  email: string;
-  message: string;
-  rating: number;
-  timestamp: Date;
+  id: number;
+  author: string;
+  content: string;
+  timestamp: string;
   likes: number;
+  avatar?: string;
 }
 
 const CommentsSection = () => {
   const [comments, setComments] = useState<Comment[]>([
     {
-      id: '1',
-      name: 'Sarah Johnson',
-      email: 's.johnson@example.com',
-      message: 'AgriIntel has completely transformed our farm operations. The AI insights are incredibly accurate and have helped us increase our yield by 30%!',
-      rating: 5,
-      timestamp: new Date('2024-01-15'),
-      likes: 12
+      id: 1,
+      author: "John Farmer",
+      content: "This platform has revolutionized how I manage my crops. The AI recommendations are spot on!",
+      timestamp: "2 hours ago",
+      likes: 12,
+      avatar: undefined
     },
     {
-      id: '2',
-      name: 'Mike Rodriguez',
-      email: 'm.rodriguez@example.com',
-      message: 'The real-time monitoring features are game-changing. We caught a potential pest issue early thanks to the alert system.',
-      rating: 5,
-      timestamp: new Date('2024-01-10'),
-      likes: 8
-    },
-    {
-      id: '3',
-      name: 'Emma Chen',
-      email: 'e.chen@example.com',
-      message: 'Great platform overall. The user interface is intuitive and the data visualization is excellent. Would love to see more customization options.',
-      rating: 4,
-      timestamp: new Date('2024-01-08'),
-      likes: 5
+      id: 2,
+      author: "Sarah Green",
+      content: "The weather integration and risk assessment features have helped me prevent crop losses multiple times.",
+      timestamp: "1 day ago", 
+      likes: 8,
+      avatar: undefined
     }
   ]);
 
-  const [newComment, setNewComment] = useState({
-    name: '',
-    email: '',
-    message: '',
-    rating: 5
-  });
+  const [newComment, setNewComment] = useState('');
+  const [authorName, setAuthorName] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newComment.name && newComment.email && newComment.message) {
+  const handleSubmitComment = () => {
+    if (newComment.trim() && authorName.trim()) {
       const comment: Comment = {
-        id: Date.now().toString(),
-        ...newComment,
-        timestamp: new Date(),
-        likes: 0
+        id: comments.length + 1,
+        author: authorName,
+        content: newComment,
+        timestamp: 'just now',
+        likes: 0,
+        avatar: undefined
       };
       setComments([comment, ...comments]);
-      setNewComment({ name: '', email: '', message: '', rating: 5 });
+      setNewComment('');
+      setAuthorName('');
     }
   };
 
-  const handleLike = (commentId: string) => {
+  const handleLike = (commentId: number) => {
     setComments(comments.map(comment => 
       comment.id === commentId 
         ? { ...comment, likes: comment.likes + 1 }
@@ -78,162 +64,85 @@ const CommentsSection = () => {
     ));
   };
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-        }`}
-      />
-    ));
-  };
-
   return (
-    <section className="container mx-auto px-4 py-20">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold mb-4">What Our Users Say</h2>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Join thousands of farmers who trust AgriIntel for their agricultural intelligence needs
-        </p>
-      </div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" />
+            Community Feedback
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Comment Form */}
+          <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+            <div className="space-y-2">
+              <Input
+                placeholder="Your name"
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                className="max-w-xs"
+              />
+              <Textarea
+                placeholder="Share your experience with AgriIntel..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+            <Button 
+              onClick={handleSubmitComment}
+              disabled={!newComment.trim() || !authorName.trim()}
+              className="gap-2"
+            >
+              <Send className="h-4 w-4" />
+              Post Comment
+            </Button>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Comments Display */}
-        <div className="space-y-6">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center">
-            <MessageSquare className="h-6 w-6 mr-2 text-primary" />
-            User Feedback
-          </h3>
-          
-          {comments.map((comment) => (
-            <Card key={comment.id} className="glass border-0 shadow-elegant">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <Avatar>
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {comment.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold">{comment.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {comment.timestamp.toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        {renderStars(comment.rating)}
-                      </div>
-                    </div>
-                    
-                    <p className="text-foreground mb-3 leading-relaxed">
-                      {comment.message}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleLike(comment.id)}
-                        className="text-muted-foreground hover:text-primary"
-                      >
-                        <ThumbsUp className="h-4 w-4 mr-1" />
-                        {comment.likes}
-                      </Button>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+          {/* Comments List */}
+          <div className="space-y-4">
+            {comments.map((comment) => (
+              <div key={comment.id} className="flex space-x-4 p-4 border rounded-lg">
+                <Avatar>
+                  <AvatarImage src={comment.avatar} />
+                  <AvatarFallback>
+                    {comment.author.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <h4 className="font-semibold text-sm">{comment.author}</h4>
+                      <Badge variant="secondary" className="text-xs">
                         Verified User
                       </Badge>
                     </div>
+                    <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{comment.content}</p>
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleLike(comment.id)}
+                      className="gap-1 text-xs"
+                    >
+                      <ThumbsUp className="h-3 w-3" />
+                      {comment.likes}
+                    </Button>
+                    <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                      <Reply className="h-3 w-3" />
+                      Reply
+                    </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Comment Form */}
-        <div>
-          <Card className="glass border-0 shadow-primary sticky top-8">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Send className="h-5 w-5 mr-2 text-primary" />
-                Share Your Experience
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Name</label>
-                    <Input
-                      value={newComment.name}
-                      onChange={(e) => setNewComment({ ...newComment, name: e.target.value })}
-                      placeholder="Your name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
-                    <Input
-                      type="email"
-                      value={newComment.email}
-                      onChange={(e) => setNewComment({ ...newComment, email: e.target.value })}
-                      placeholder="your@email.com"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Rating</label>
-                  <div className="flex items-center space-x-1">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setNewComment({ ...newComment, rating: i + 1 })}
-                        className="p-1 hover:scale-110 transition-transform"
-                      >
-                        <Star
-                          className={`h-6 w-6 ${
-                            i < newComment.rating 
-                              ? 'fill-yellow-400 text-yellow-400' 
-                              : 'text-gray-300 hover:text-yellow-300'
-                          }`}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Your Feedback</label>
-                  <Textarea
-                    value={newComment.message}
-                    onChange={(e) => setNewComment({ ...newComment, message: e.target.value })}
-                    placeholder="Share your experience with AgriIntel..."
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-primary hover:bg-primary/90"
-                  size="lg"
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Submit Feedback
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </section>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

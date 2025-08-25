@@ -195,18 +195,114 @@ const Dashboard = () => {
                 <CardTitle>Field Mapping & Satellite Imagery</CardTitle>
                 <CardDescription>Interactive maps and real-time field monitoring</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="h-96 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground">Advanced mapping features coming soon</p>
-                    <Button 
-                      variant="outline" 
-                      className="mt-4"
-                      onClick={() => navigate('/map')}
-                    >
-                      View Current Map
-                    </Button>
+              <CardContent className="p-0">
+                <div className="h-[600px] relative">
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-br from-green-100 via-blue-50 to-green-50 rounded-lg"
+                    style={{
+                      backgroundImage: `
+                        radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 50%)
+                      `
+                    }}
+                  >
+                    {/* Field Zones */}
+                    <div className="absolute top-16 left-16 w-32 h-24 bg-green-500/20 border-2 border-green-500 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-green-700">North Field</div>
+                        <div className="text-xs text-green-600">Corn • 12.5ha</div>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute bottom-20 left-20 w-28 h-20 bg-yellow-500/20 border-2 border-yellow-500 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-yellow-700">South Field</div>
+                        <div className="text-xs text-yellow-600">Soybeans • 8.3ha</div>
+                      </div>
+                    </div>
+
+                    <div className="absolute top-20 right-24 w-36 h-28 bg-blue-500/20 border-2 border-blue-500 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-blue-700">East Field</div>
+                        <div className="text-xs text-blue-600">Wheat • 15.2ha</div>
+                      </div>
+                    </div>
+
+                    {/* Weather Markers */}
+                    <div className="absolute top-8 left-1/2 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <div className="absolute top-6 left-1/2 text-xs text-red-600 font-medium">22°C</div>
+                    
+                    <div className="absolute bottom-32 right-16 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-30 right-12 text-xs text-blue-600 font-medium">90% humidity</div>
+
+                    {/* Controls Overlay */}
+                    <div className="absolute top-4 left-4 space-y-2">
+                      <Card className="p-2 bg-white/90 backdrop-blur">
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline" className="text-xs">Satellite</Button>
+                          <Button size="sm" variant="outline" className="text-xs">Terrain</Button>
+                          <Button size="sm" variant="outline" className="text-xs">Fields</Button>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* Legend */}
+                    <div className="absolute bottom-4 right-4">
+                      <Card className="p-3 bg-white/90 backdrop-blur">
+                        <div className="space-y-2">
+                          <div className="text-xs font-semibold">Field Health</div>
+                          <div className="flex items-center space-x-2 text-xs">
+                            <div className="w-3 h-3 bg-green-500 rounded"></div>
+                            <span>Excellent (NDVI > 0.8)</span>
+                          </div>
+                          <div className="flex items-center space-x-2 text-xs">
+                            <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                            <span>Good (NDVI 0.6-0.8)</span>
+                          </div>
+                          <div className="flex items-center space-x-2 text-xs">
+                            <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                            <span>Monitoring (NDVI < 0.6)</span>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* Center Message */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <Card className="p-6 bg-white/95 backdrop-blur pointer-events-auto">
+                        <div className="text-center space-y-3">
+                          <MapPin className="h-12 w-12 mx-auto text-primary" />
+                          <div>
+                            <h3 className="font-semibold text-lg">Interactive Field Map</h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Simulated field visualization with real-time monitoring
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => navigate('/map')}
+                            >
+                              View Full Map
+                            </Button>
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              onClick={() => {
+                                // Simulate field selection
+                                const fields = ['North Field selected', 'South Field selected', 'East Field selected'];
+                                const randomField = fields[Math.floor(Math.random() * fields.length)];
+                                alert(randomField);
+                              }}
+                            >
+                              Select Field
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
                   </div>
                 </div>
               </CardContent>
