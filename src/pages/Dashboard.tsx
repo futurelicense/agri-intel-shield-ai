@@ -1,5 +1,4 @@
 
-
 import React, { useState, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -254,7 +253,7 @@ const Dashboard = () => {
                           <div className="text-xs font-semibold">Field Health</div>
                           <div className="flex items-center space-x-2 text-xs">
                             <div className="w-3 h-3 bg-green-500 rounded"></div>
-                            <span>Excellent (NDVI > 0.8)</span>
+                            <span>Excellent (NDVI {'>0.8'})</span>
                           </div>
                           <div className="flex items-center space-x-2 text-xs">
                             <div className="w-3 h-3 bg-yellow-500 rounded"></div>
@@ -262,7 +261,7 @@ const Dashboard = () => {
                           </div>
                           <div className="flex items-center space-x-2 text-xs">
                             <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                            <span>Monitoring (NDVI < 0.6)</span>
+                            <span>Monitoring (NDVI {'<0.6'})</span>
                           </div>
                         </div>
                       </Card>
@@ -360,4 +359,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
