@@ -422,7 +422,7 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-xs text-muted-foreground">
-              <span>© 2024 Shield AI Solutions. All rights reserved.</span>
+              <span>© 2023 Shield AI Solutions. All rights reserved.</span>
               <span>AgriIntel™ v2.1.0</span>
               <span>Enterprise Licensed</span>
             </div>
