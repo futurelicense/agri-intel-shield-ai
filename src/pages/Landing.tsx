@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import CommentsSection from '@/components/CommentsSection';
+
 import { 
   Sprout, 
   BarChart3, 
@@ -63,6 +63,33 @@ const Landing = () => {
     { value: '95%', label: 'Accuracy Rate', icon: Target },
     { value: '500+', label: 'Active Farms', icon: Users },
     { value: '25%', label: 'Yield Increase', icon: TrendingUp }
+  ];
+
+  const testimonials = [
+    {
+      name: 'Sarah Johnson',
+      role: 'Farm Owner',
+      location: 'Iowa, USA',
+      content: 'AgriIntel has transformed how we manage our 500-acre corn farm. The AI insights helped us increase our yield by 28% while reducing water usage significantly.',
+      rating: 5,
+      avatar: '🌾'
+    },
+    {
+      name: 'Miguel Rodriguez',
+      role: 'Agricultural Manager',
+      location: 'California, USA',
+      content: 'The real-time monitoring and predictive analytics are game-changers. We can now prevent issues before they impact our crops.',
+      rating: 5,
+      avatar: '🚜'
+    },
+    {
+      name: 'David Chen',
+      role: 'Organic Farmer',
+      location: 'Oregon, USA',
+      content: 'Perfect for sustainable farming. The precision agriculture features help us maintain organic standards while maximizing efficiency.',
+      rating: 5,
+      avatar: '🌱'
+    }
   ];
 
   return (
@@ -234,8 +261,42 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Comments Section */}
-      <CommentsSection />
+      {/* Testimonials Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold mb-4">What Our Farmers Say</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Trusted by farmers worldwide who have transformed their operations with AgriIntel™
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <Card key={index} className="glass border-0 shadow-elegant hover-lift">
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">{testimonial.name}</CardTitle>
+                    <CardDescription>{testimonial.role}</CardDescription>
+                    <p className="text-xs text-muted-foreground">{testimonial.location}</p>
+                  </div>
+                </div>
+                <div className="flex space-x-1">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-warning text-warning" />
+                  ))}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 border-y border-border/50">
