@@ -107,7 +107,7 @@ const Landing = () => {
       avatar: '🌾'
     },
     {
-      name: 'Avery Johnson',
+      name: 'Avery J.',
       role: 'Director',
       location: 'USA',
       content: 'The way AgriShield combines weather data, satellite insights, and AI summaries into a single dashboard is unmatched. It\'s the future of sustainable farming.',
@@ -288,9 +288,9 @@ const Landing = () => {
       {/* Testimonials Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">What Our Farmers Say</h2>
+          <h2 className="text-4xl font-bold mb-4">Some Feedback</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Trusted by farmers worldwide who have transformed their operations with AgriIntel™
+            Users who have enhanced their operations with AgriIntel™
           </p>
         </div>
         
