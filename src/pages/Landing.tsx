@@ -294,31 +294,33 @@ const Landing = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="glass border-0 shadow-elegant hover-lift">
-              <CardHeader>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
-                    {testimonial.avatar}
+        <div className="overflow-x-auto pb-4">
+          <div className="flex space-x-6 w-max">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="glass border-0 shadow-elegant hover-lift w-80 flex-shrink-0">
+                <CardHeader>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{testimonial.name}</CardTitle>
+                      <CardDescription>{testimonial.role}</CardDescription>
+                      <p className="text-xs text-muted-foreground">{testimonial.location}</p>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">{testimonial.name}</CardTitle>
-                    <CardDescription>{testimonial.role}</CardDescription>
-                    <p className="text-xs text-muted-foreground">{testimonial.location}</p>
+                  <div className="flex space-x-1">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-warning text-warning" />
+                    ))}
                   </div>
-                </div>
-                <div className="flex space-x-1">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-warning text-warning" />
-                  ))}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
-              </CardContent>
-            </Card>
-          ))}
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
