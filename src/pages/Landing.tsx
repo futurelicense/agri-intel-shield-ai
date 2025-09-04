@@ -67,28 +67,52 @@ const Landing = () => {
 
   const testimonials = [
     {
-      name: 'Sarah Johnson',
-      role: 'Farm Owner',
-      location: 'Iowa, USA',
-      content: 'AgriIntel has transformed how we manage our 500-acre corn farm. The AI insights helped us increase our yield by 28% while reducing water usage significantly.',
+      name: 'Adanna E',
+      role: 'Agricultural Extension Officer',
+      location: 'Ebonyi State, Nigeria',
+      content: 'AgriShield AI has changed the way we respond to pest outbreaks. The satellite maps and risk alerts help us guide farmers early—saving both crops and income.',
       rating: 5,
-      avatar: '🌾'
+      avatar: '🌍'
     },
     {
-      name: 'Miguel Rodriguez',
-      role: 'Agricultural Manager',
-      location: 'California, USA',
-      content: 'The real-time monitoring and predictive analytics are game-changers. We can now prevent issues before they impact our crops.',
+      name: 'Marcus H.',
+      role: 'AgriTech Consultant',
+      location: 'USA',
+      content: 'This platform is a game-changer. The precision with which AgriShield AI detects climate stress is something we\'ve never had before at scale.',
       rating: 5,
       avatar: '🚜'
     },
     {
-      name: 'David Chen',
-      role: 'Organic Farmer',
-      location: 'Oregon, USA',
-      content: 'Perfect for sustainable farming. The precision agriculture features help us maintain organic standards while maximizing efficiency.',
+      name: 'Abdullahi F',
+      role: 'Project Lead, Women in Agriculture Initiative',
+      location: 'Nigeria',
+      content: 'Our cooperative uses AgriShield AI to assess soil health before planting. It\'s easy to use, even in rural areas, and the WhatsApp bot is perfect for our farmers.',
       rating: 5,
-      avatar: '🌱'
+      avatar: '👩‍🌾'
+    },
+    {
+      name: 'Jamal C',
+      role: 'Agriculture Researcher',
+      location: 'USA',
+      content: 'AgriShield AI bridges AI and agronomy beautifully. Their integration with Hugging Face models makes risk summaries feel like talking to an expert agronomist.',
+      rating: 5,
+      avatar: '🔬'
+    },
+    {
+      name: 'Ngozi O',
+      role: 'Farm Owner & Agri-Cooperative Chair',
+      location: 'Delta State, Nigeria',
+      content: 'Before AgriShield, we relied on guesswork. Now we get real-time NDVI maps and drought warnings, our maize yield has improved dramatically.',
+      rating: 5,
+      avatar: '🌾'
+    },
+    {
+      name: 'Avery Johnson',
+      role: 'Director',
+      location: 'USA',
+      content: 'The way AgriShield combines weather data, satellite insights, and AI summaries into a single dashboard is unmatched. It\'s the future of sustainable farming.',
+      rating: 5,
+      avatar: '📊'
     }
   ];
 
