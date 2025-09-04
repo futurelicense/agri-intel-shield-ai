@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +21,33 @@ import {
 
 const Landing = () => {
   const navigate = useNavigate();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer || isPaused) return;
+
+    const scrollStep = 1; // pixels per frame
+    const scrollSpeed = 30; // milliseconds per frame
+
+    const autoScroll = () => {
+      if (scrollContainer) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+        
+        if (scrollLeft + clientWidth >= scrollWidth) {
+          // Reset to beginning when reaching the end
+          scrollContainer.scrollLeft = 0;
+        } else {
+          scrollContainer.scrollLeft += scrollStep;
+        }
+      }
+    };
+
+    const intervalId = setInterval(autoScroll, scrollSpeed);
+    return () => clearInterval(intervalId);
+  }, [isPaused]);
 
   const features = [
     {
@@ -294,7 +321,12 @@ const Landing = () => {
           </p>
         </div>
         
-        <div className="overflow-x-auto pb-4">
+        <div 
+          ref={scrollRef}
+          className="overflow-x-auto pb-4"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <div className="flex space-x-6 w-max">
             {testimonials.map((testimonial, index) => (
               <Card key={index} className="glass border-0 shadow-elegant hover-lift w-80 flex-shrink-0">
