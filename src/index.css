@@ -199,4 +199,13 @@ All colors MUST be HSL.
     transform: translateY(-4px);
     box-shadow: var(--shadow-elegant);
   }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

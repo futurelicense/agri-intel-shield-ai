@@ -323,7 +323,7 @@ const Landing = () => {
         
         <div 
           ref={scrollRef}
-          className="overflow-x-auto pb-4"
+          className="overflow-x-auto pb-4 scrollbar-hide"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
