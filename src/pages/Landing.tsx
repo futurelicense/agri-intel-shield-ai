@@ -400,7 +400,7 @@ const Landing = () => {
               Powered by Shield AI Solutions | Advanced Farm Intelligence Platform
             </p>
             <p className="text-xs text-muted-foreground">
-              © 2024 Shield AI Solutions. All rights reserved.
+              © 2023 Shield AI Solutions. All rights reserved.
             </p>
           </div>
         </div>
