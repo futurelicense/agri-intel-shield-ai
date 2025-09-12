@@ -94,52 +94,44 @@ const Landing = () => {
 
   const testimonials = [
     {
-      name: 'Adanna E',
-      role: 'Agricultural Extension Officer',
-      location: 'Ebonyi State, Nigeria',
-      content: 'AgriShield AI has changed the way we respond to pest outbreaks. The satellite maps and risk alerts help us guide farmers early—saving both crops and income.',
+      name: 'James E.',
+      role: 'Field Crops Extension Advisor',
+      location: 'Lincoln, Nebraska',
+      content: 'Agri-Intel Shield AI has been part of our soybean trial plots near Lincoln since its launch. The real-time alerts on disease risk zones are already showing results. We\'re adjusting fungicide sprays more strategically, reducing unnecessary applications, and cutting input costs by nearly 12%, while improving treatment effectiveness.',
       rating: 5,
-      avatar: '🌍'
+      avatar: '🌱'
     },
     {
-      name: 'Marcus H.',
-      role: 'AgriTech Consultant',
-      location: 'USA',
-      content: 'This platform is a game-changer. The precision with which AgriShield AI detects climate stress is something we\'ve never had before at scale.',
+      name: 'Chiamaka O.',
+      role: 'Smallholder Tomato Farmer',
+      location: 'Kaduna, Nigeria',
+      content: 'Since adopting Agri-Intel Shield AI last year, I have been using the WhatsApp bot daily to receive field-specific guidance on irrigation and fertilizer use. Even with limited resources, the tool helps me understand which parts of my farm need attention. This season, I reduced fertilizer use by 15% without lowering yields, and I feel more confident making decisions based on real-time satellite data.',
       rating: 5,
-      avatar: '🚜'
+      avatar: '🍅'
     },
     {
-      name: 'Abdullahi F',
-      role: 'Project Lead, Women in Agriculture Initiative',
-      location: 'Nigeria',
-      content: 'Our cooperative uses AgriShield AI to assess soil health before planting. It\'s easy to use, even in rural areas, and the WhatsApp bot is perfect for our farmers.',
-      rating: 5,
-      avatar: '👩‍🌾'
-    },
-    {
-      name: 'Jamal C',
-      role: 'Agriculture Researcher',
-      location: 'USA',
-      content: 'AgriShield AI bridges AI and agronomy beautifully. Their integration with Hugging Face models makes risk summaries feel like talking to an expert agronomist.',
-      rating: 5,
-      avatar: '🔬'
-    },
-    {
-      name: 'Ngozi O',
-      role: 'Farm Owner & Agri-Cooperative Chair',
-      location: 'Delta State, Nigeria',
-      content: 'Before AgriShield, we relied on guesswork. Now we get real-time NDVI maps and drought warnings, our maize yield has improved dramatically.',
+      name: 'Rachel L.',
+      role: 'Extension Specialist',
+      location: 'Lubbock, Texas',
+      content: 'We\'re still piloting Agri-Intel Shield AI in our sorghum sustainability program with more than 40 farms around Lubbock. Farmers are already seeing improvements—tracking evapotranspiration and pest risk in real time is changing the way they plan. It\'s becoming central to our training sessions, and recordkeeping and precision input use keep getting better.',
       rating: 5,
       avatar: '🌾'
     },
     {
-      name: 'Avery J.',
-      role: 'Director',
-      location: 'USA',
-      content: 'The way AgriShield combines weather data, satellite insights, and AI summaries into a single dashboard is unmatched. It\'s the future of sustainable farming.',
+      name: 'Kwame A.',
+      role: 'Rice Cooperative Leader',
+      location: 'Volta Region, Ghana',
+      content: 'Our cooperative began using Agri-Intel Shield AI to guide water management across small rice fields in the Volta Region. The GIS-based maps show us which plots are most vulnerable to drought stress, and the digital dashboards make it easy to share updates with all members. After just one season, we\'ve improved water efficiency and reduced losses, while building stronger collaboration among farmers.',
       rating: 5,
-      avatar: '📊'
+      avatar: '🌾'
+    },
+    {
+      name: 'Derek S.',
+      role: 'Small Grains Grower',
+      location: 'Billings, Montana',
+      content: 'I\'m still using Agri-Intel Shield AI for seasonal planning and NDVI monitoring on my wheat and barley fields. Just this season it flagged a low-growth zone I would have missed. Fixing a drainage issue in time turned that field into one of my best-performing blocks. It\'s now part of my routine farm planning.',
+      rating: 5,
+      avatar: '🌿'
     }
   ];
 
